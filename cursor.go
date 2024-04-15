@@ -177,6 +177,7 @@ func (c *Cursor) Next() {
 	if c.HistoryPosition < len(c.history)-1 {
 		c.HistoryPosition++
 		c.input = []rune(c.history[c.HistoryPosition+1])
+		c.correctPosition()
 	} else {
 		return
 	}
@@ -186,6 +187,7 @@ func (c *Cursor) Prev() {
 	if c.HistoryPosition > 0 {
 		c.HistoryPosition--
 		c.input = []rune(c.history[c.HistoryPosition])
+		c.correctPosition()
 	} else {
 		return
 	}
@@ -220,6 +222,7 @@ func (c *Cursor) Listen(line []rune, pos int, key rune) ([]rune, int, bool) {
 	switch key {
 	case 0: // empty
 	case KeyEnter:
+		c.history = c.history[:c.HistoryPosition]
 		return []rune(c.Get()), c.Position, false
 	case KeyBackspace:
 		if c.erase {
@@ -237,6 +240,7 @@ func (c *Cursor) Listen(line []rune, pos int, key rune) ([]rune, int, bool) {
 	case KeyNext:
 		c.Next()
 	case KeyPrev:
+		c.history[c.HistoryPosition] = string(c.input)
 		c.Prev()
 	default:
 		if c.erase {
