@@ -38,6 +38,8 @@ var (
 	// PipeCursor is a pipe character "|" which appears before the input
 	// character.
 	PipeCursor Pointer = pipeCursor
+
+	SysCursor Pointer = sysCursor
 )
 
 // Cursor tracks the state associated with the movable cursor
