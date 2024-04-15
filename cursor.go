@@ -179,14 +179,15 @@ func (c *Cursor) Next() {
 		c.input = []rune(c.history[c.HistoryPosition+1])
 		c.correctPosition()
 	}
+	if c.HistoryPosition == len(c.history) {
+		c.history = c.history[:c.HistoryPosition]
+	}
 }
 
 func (c *Cursor) Prev() {
 	// 如果当前输入尚未添加到历史记录中，则先添加到历史记录
-	if c.HistoryPosition >= len(c.history) {
+	if c.HistoryPosition == len(c.history) {
 		c.history = append(c.history, string(c.input))
-	} else {
-		c.history[c.HistoryPosition] = string(c.input)
 	}
 
 	// 移动到上一个历史记录
