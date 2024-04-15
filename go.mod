@@ -1,4 +1,4 @@
-module github.com/elfgzp/promptui
+module github.com/brckubo/promptui
 
 go 1.11
 

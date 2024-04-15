@@ -1,6 +1,8 @@
 package promptui
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Pointer is A specific type that translates a given set of runes into a given
 // set of runes pointed at by the cursor.
@@ -44,6 +46,10 @@ type Cursor struct {
 	// what the user entered, and what we will echo back to them, after
 	// insertion of the cursor and prefixing with the prompt
 	input []rune
+	// the history of the input
+	history []string
+	// the current position in the history
+	HistoryPosition int
 	// Put the cursor before this slice
 	Position int
 	erase    bool
@@ -51,11 +57,14 @@ type Cursor struct {
 
 // NewCursor create a new cursor, with the DefaultCursor, the specified input,
 // and position at the end of the specified starting input.
-func NewCursor(startinginput string, pointer Pointer, eraseDefault bool) Cursor {
+func NewCursor(startinginput string, history []string, pointer Pointer, eraseDefault bool) Cursor {
 	if pointer == nil {
 		pointer = defaultCursor
 	}
-	cur := Cursor{Cursor: pointer, Position: len(startinginput), input: []rune(startinginput), erase: eraseDefault}
+	if history == nil {
+		history = []string{}
+	}
+	cur := Cursor{Cursor: pointer, Position: len(startinginput), input: []rune(startinginput), history: history, HistoryPosition: len(history), erase: eraseDefault}
 	if eraseDefault {
 		cur.Start()
 	} else {
@@ -164,6 +173,24 @@ func (c *Cursor) Move(shift int) {
 	c.correctPosition()
 }
 
+func (c *Cursor) Next() {
+	if c.HistoryPosition < len(c.history)-1 {
+		c.HistoryPosition++
+		c.input = []rune(c.history[c.HistoryPosition+1])
+	} else {
+		return
+	}
+}
+
+func (c *Cursor) Prev() {
+	if c.HistoryPosition > 0 {
+		c.HistoryPosition--
+		c.input = []rune(c.history[c.HistoryPosition])
+	} else {
+		return
+	}
+}
+
 // Backspace removes the rune that precedes the cursor
 //
 // It handles being at the beginning or end of the row, and moves the cursor to
@@ -172,7 +199,6 @@ func (c *Cursor) Backspace() {
 	a := c.input
 	i := c.Position
 	if i == 0 {
-		// Shrug
 		return
 	}
 	if i == len(a) {
@@ -208,6 +234,10 @@ func (c *Cursor) Listen(line []rune, pos int, key rune) ([]rune, int, bool) {
 		c.Move(1)
 	case KeyBackward:
 		c.Move(-1)
+	case KeyNext:
+		c.Next()
+	case KeyPrev:
+		c.Prev()
 	default:
 		if c.erase {
 			c.erase = false

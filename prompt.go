@@ -22,6 +22,9 @@ type Prompt struct {
 	// and the user will be able to view or change it depending on the options.
 	Default string
 
+	// History is a list of previously entered values that the user can cycle through using the up and down arrow keys.
+	History []string
+
 	// AllowEdit lets the user edit the default value. If false, any key press
 	// other than <Enter> automatically clears the default value.
 	AllowEdit bool
@@ -55,19 +58,22 @@ type Prompt struct {
 // text/template syntax. Custom state, colors and background color are available for use inside
 // the templates and are documented inside the Variable section of the docs.
 //
-// Examples
+// # Examples
 //
 // text/templates use a special notation to display programmable content. Using the double bracket notation,
 // the value can be printed with specific helper functions. For example
 //
 // This displays the value given to the template as pure, unstylized text.
-// 	'{{ . }}'
+//
+//	'{{ . }}'
 //
 // This displays the value colored in cyan
-// 	'{{ . | cyan }}'
+//
+//	'{{ . | cyan }}'
 //
 // This displays the value colored in red with a cyan background-color
-// 	'{{ . | red | cyan }}'
+//
+//	'{{ . | red | cyan }}'
 //
 // See the doc of text/template for more info: https://golang.org/pkg/text/template/
 type PromptTemplates struct {
@@ -153,7 +159,7 @@ func (p *Prompt) Run() (string, error) {
 		input = ""
 	}
 	eraseDefault := input != "" && !p.AllowEdit
-	cur := NewCursor(input, p.Pointer, eraseDefault)
+	cur := NewCursor(input, p.History, p.Pointer, eraseDefault)
 
 	listen := func(input []rune, pos int, key rune) ([]rune, int, bool) {
 		_, _, keepOn := cur.Listen(input, pos, key)
