@@ -232,6 +232,7 @@ func (c *Cursor) Listen(line []rune, pos int, key rune) ([]rune, int, bool) {
 		// no matter what, update our internal representation.
 		c.Update(string(line))
 	}
+	
 
 	switch key {
 	case 0: // empty
