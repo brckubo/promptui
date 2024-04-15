@@ -2,6 +2,7 @@ package promptui
 
 import (
 	"fmt"
+	"log"
 )
 
 // Pointer is A specific type that translates a given set of runes into a given
@@ -174,6 +175,8 @@ func (c *Cursor) Move(shift int) {
 }
 
 func (c *Cursor) Next() {
+
+	log.Println(c.history)
 	if c.HistoryPosition < len(c.history) {
 		c.HistoryPosition++
 		c.input = []rune(c.history[c.HistoryPosition+1])
@@ -183,9 +186,12 @@ func (c *Cursor) Next() {
 	if c.HistoryPosition == len(c.history) {
 		c.history = c.history[:c.HistoryPosition]
 	}
+
+	log.Println(c.history)
 }
 
 func (c *Cursor) Prev() {
+	log.Println(c.history)
 	// 如果当前输入尚未添加到历史记录中，则先添加到历史记录
 	if c.HistoryPosition == len(c.history) {
 		c.history = append(c.history, string(c.input))
@@ -198,6 +204,8 @@ func (c *Cursor) Prev() {
 		c.Position = len(c.input)
 		c.correctPosition()
 	}
+
+	log.Println(c.history)
 }
 
 // Backspace removes the rune that precedes the cursor
@@ -229,7 +237,6 @@ func (c *Cursor) Listen(line []rune, pos int, key rune) ([]rune, int, bool) {
 	switch key {
 	case 0: // empty
 	case KeyEnter:
-		c.history = c.history[:c.HistoryPosition]
 		return []rune(c.Get()), c.Position, false
 	case KeyBackspace:
 		if c.erase {
