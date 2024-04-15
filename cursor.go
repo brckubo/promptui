@@ -178,18 +178,22 @@ func (c *Cursor) Next() {
 		c.HistoryPosition++
 		c.input = []rune(c.history[c.HistoryPosition+1])
 		c.correctPosition()
-	} else {
-		return
 	}
 }
 
 func (c *Cursor) Prev() {
+	// 如果当前输入尚未添加到历史记录中，则先添加到历史记录
+	if c.HistoryPosition >= len(c.history) {
+		c.history = append(c.history, string(c.input))
+	} else {
+		c.history[c.HistoryPosition] = string(c.input)
+	}
+
+	// 移动到上一个历史记录
 	if c.HistoryPosition > 0 {
 		c.HistoryPosition--
 		c.input = []rune(c.history[c.HistoryPosition])
 		c.correctPosition()
-	} else {
-		return
 	}
 }
 
@@ -240,7 +244,6 @@ func (c *Cursor) Listen(line []rune, pos int, key rune) ([]rune, int, bool) {
 	case KeyNext:
 		c.Next()
 	case KeyPrev:
-		c.history[c.HistoryPosition] = string(c.input)
 		c.Prev()
 	default:
 		if c.erase {
