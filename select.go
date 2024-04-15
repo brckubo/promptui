@@ -248,7 +248,7 @@ func (s *Select) innerRun(cursorPos, scroll int, top rune) (int, string, error) 
 	rl.Write([]byte(hideCursor))
 	sb := screenbuf.New(rl)
 
-	cur := NewCursor("", s.Pointer, false)
+	cur := NewCursor("", nil, s.Pointer, false)
 
 	canSearch := s.Searcher != nil
 	searchMode := s.StartInSearchMode
