@@ -2,7 +2,6 @@ package promptui
 
 import (
 	"fmt"
-	"log"
 )
 
 // Pointer is A specific type that translates a given set of runes into a given
@@ -23,6 +22,10 @@ func pipeCursor(input []rune) []rune {
 	out = append(out, marker...)
 	out = append(out, input...)
 	return out
+}
+
+func sysCursor(input []rune) []rune {
+	return []rune(fmt.Sprintf("\033[%sG", string(input)))
 }
 
 var (
@@ -175,9 +178,7 @@ func (c *Cursor) Move(shift int) {
 }
 
 func (c *Cursor) Next() {
-
-	log.Println(c.history)
-	if c.HistoryPosition < len(c.history) {
+	if c.HistoryPosition < len(c.history)-1 {
 		c.HistoryPosition++
 		c.input = []rune(c.history[c.HistoryPosition])
 		c.Position = len(c.input)
@@ -186,12 +187,9 @@ func (c *Cursor) Next() {
 	if c.HistoryPosition == len(c.history) {
 		c.history = c.history[:c.HistoryPosition]
 	}
-
-	log.Println(c.history)
 }
 
 func (c *Cursor) Prev() {
-	log.Println(c.history)
 	// 如果当前输入尚未添加到历史记录中，则先添加到历史记录
 	if c.HistoryPosition == len(c.history) {
 		c.history = append(c.history, string(c.input))
@@ -205,7 +203,6 @@ func (c *Cursor) Prev() {
 		c.correctPosition()
 	}
 
-	log.Println(c.history)
 }
 
 // Backspace removes the rune that precedes the cursor
