@@ -179,7 +179,7 @@ func (c *Cursor) Next() {
 	log.Println(c.history)
 	if c.HistoryPosition < len(c.history) {
 		c.HistoryPosition++
-		c.input = []rune(c.history[c.HistoryPosition+1])
+		c.input = []rune(c.history[c.HistoryPosition])
 		c.Position = len(c.input)
 		c.correctPosition()
 	}
