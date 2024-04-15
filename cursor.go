@@ -174,9 +174,10 @@ func (c *Cursor) Move(shift int) {
 }
 
 func (c *Cursor) Next() {
-	if c.HistoryPosition < len(c.history)-1 {
+	if c.HistoryPosition < len(c.history) {
 		c.HistoryPosition++
 		c.input = []rune(c.history[c.HistoryPosition+1])
+		c.Position = len(c.input)
 		c.correctPosition()
 	}
 	if c.HistoryPosition == len(c.history) {
@@ -194,6 +195,7 @@ func (c *Cursor) Prev() {
 	if c.HistoryPosition > 0 {
 		c.HistoryPosition--
 		c.input = []rune(c.history[c.HistoryPosition])
+		c.Position = len(c.input)
 		c.correctPosition()
 	}
 }
